@@ -6,12 +6,32 @@ or agar kisi bhi cheez ki or porperty likhui hui hai to wahi lagti hai iski prop
 /* id is the basic thing we can give to the object id unique identifier repeat nahi karte unique rehti hai 
 class muktiple cheezo pe karne ke liye karte hai 
 it should be written as #*/
+/* agar ham log kisi tage ke sath uska class likhte hai to us class ke andar ke tag ko hi chage hota baki tag mai change nahi hota   */
+#fuck h1{
+    color: rgb(0, 213, 255);
+}
 h1{
-    color: red;
+    color: chartreuse;
 }
 p{
     color: magenta;
 }
+/* # dalke id likhte hai 
+or wo properrty un pe lagegi jaha pe id ka naam same hoga or wo case senstive hai  */
+/* class ko .name se likhte  */
+.bloodred{
+    color: red;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-weight: 400;
+
+}
+h4,h2,h3{
+    /* ismai baki sab to same rahega bas colour change hoga kyonki baki properties ko hamne cheda nahi hai  */
+    color: yellowgreen;
+}
+/* bahut sare element ki same css liklhne ke liye hum group use lete hai  */
+/* jiske liye 1,2,3{} karke likhte or un sabko same property milti */
+
 #small{
     font-size: small;
 }
