@@ -1,0 +1,107 @@
+/* * pe likhi hui cheez pure page pe lagti hai  
+or agar kisi bhi cheez ki or porperty likhui hui hai to wahi lagti hai iski property nahi */
+*{
+    background-color: black;
+}
+/* id is the basic thing we can give to the object id unique identifier repeat nahi karte unique rehti hai 
+class muktiple cheezo pe karne ke liye karte hai 
+it should be written as #*/
+h1{
+    color: red;
+}
+p{
+    color: magenta;
+}
+#small{
+    font-size: small;
+}
+#large{
+    font-size: larger;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* #box{
+    width: 200px;
+    height: 200px;
+}
+a:link { text-decoration: none; }
+a:visited { text-decoration: none; }
+a:hover { text-decoration: none; }
+a:active { text-decoration: none; }
+.one{
+    background-color: yellow;
+    text-align: center;
+    text-decoration: underline;
+}
+
+.two{
+    background-color: blue;
+    text-align: left;
+    text-decoration: overline;
+}
+.three{
+    background-color: red;
+    text-align: right;
+    text-decoration: line-through;
+}
+.four{
+    text-decoration: none;
+}
+#box4{
+    width: 200px;
+    height: 200px;
+    background-color: aqua;
+    text-decoration:none;
+} */
