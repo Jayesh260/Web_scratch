@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teachable Machine Image Model</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .section {
+      margin-bottom: 20px;
+      background-color: #f0f0f0;
+      padding: 20px;
+      border-radius: 8px;
+      width: 400px; 
+      text-align: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    #webcam-container, #predictions {
+      margin-bottom: 10px;
+    }
+
+    /* Loader Styles */
+    .loader {
+      display: none; 
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 5px solid #f3f3f3; 
+      border-radius: 50%;
+      border-top: 5px solid #007bff;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <h1>Teachable Machine Image Model</h1>
+
+  <div class="loader"></div>
+
+  <div class="section">
+    <h2>Webcam Capture</h2>
+    <div class="controls">
+      <button type="button" onclick="initWebcam()" id="startButton">Start Webcam</button>
+      <button type="button" onclick="stopWebcam()" id="stopButton" disabled>Stop Webcam</button>
+    </div>
+    <div id="webcam-container"></div>
+  </div>
+
+  <div class="section">
+    <h2>Upload Image</h2>
+    <input type="file" id="imageUpload" accept="image/*">
+    <button type="button" onclick="predict()">Predict</button>
+  </div>
+
+  <div class="section">
+    <h2>Predictions</h2>
+    <div id="predictions"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+  <script type="text/javascript">
+    const URL = "https://teachablemachine.withgoogle.com/models/rGp7vv2pC/"; // Replace with your model URL
+
+    let model, webcam, labelContainer, maxPredictions;
+    let isWebcamRunning = false;
+
+    // Function to show and hide the loader
+    function showLoader() {
+      document.querySelector('.loader').style.display = 'block';
+    }
+
+    function hideLoader() {
+      document.querySelector('.loader').style.display = 'none';
+    }
+
+    async function init() {
+      const modelURL = URL + "model.json";
+      const metadataURL = URL + "metadata.json";
+
+      showLoader(); 
+
+      model = await tmImage.load(modelURL, metadataURL);
+      maxPredictions = model.getTotalClasses();
+
+      labelContainer = document.getElementById("predictions");
+      for (let i = 0; i < maxPredictions; i++) {
+        labelContainer.appendChild(document.createElement("div"));
+      }
+
+      initWebcam(); 
+      hideLoader(); 
+    }
+
+    // --- Webcam Functions --- 
+    async function initWebcam() {
+      const flip = true; 
+      webcam = new tmImage.Webcam(200, 200, flip); 
+      await webcam.setup();  
+      document.getElementById("webcam-container").appendChild(webcam.canvas);
+
+      document.getElementById('startButton').disabled = true;
+      document.getElementById('stopButton').disabled = false;
+
+      // Start prediction loop after webcam setup
+      await webcam.play();
+      window.requestAnimationFrame(loop);
+      isWebcamRunning = true;
+    }
+
+    async function stopWebcam() {
+      await webcam.stop();
+      document.getElementById('startButton').disabled = false;
+      document.getElementById('stopButton').disabled = true;
+      isWebcamRunning = false;
+    }
+
+    async function loop() {
+      if (isWebcamRunning) { 
+        webcam.update(); 
+        await predictFromWebcam();
+        window.requestAnimationFrame(loop);
+      }
+    }
+
+    async function predictFromWebcam() {
+      showLoader(); // Show loader during prediction
+      const prediction = await model.predict(webcam.canvas);
+      updatePredictions(prediction);
+      hideLoader();
+    }
+
+    // --- Image Upload Functions --- 
+    async function predict() {
+      showLoader();
+      const image = await loadImageFromFile();
+      if (image) {
+        const prediction = await model.predict(image);
+        updatePredictions(prediction);
+      }
+      hideLoader();
+    }
+
+    function loadImageFromFile() {
+      return new Promise((resolve, reject) => {
+        const imageUpload = document.getElementById("imageUpload");
+        if (!imageUpload.files.length) {
+          alert("Please select an image.");
+          resolve(null);
+        }
+
+        const file = imageUpload.files[0];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          img.width = 200; // Match webcam dimensions
+          img.onload = () => resolve(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // --- Helper function --- 
+    function updatePredictions(prediction) {
+      for (let i = 0; i < maxPredictions; i++) {
+        const classPrediction =
+          prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+        labelContainer.childNodes[i].innerHTML = classPrediction;
+      }
+    }
+
+    // Initialize the app
+    init();
+  </script>
+</body>
+</html>
